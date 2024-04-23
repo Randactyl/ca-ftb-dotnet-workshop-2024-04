@@ -78,6 +78,8 @@ Regardless of Visual Studio Subscription, the other tools you will need:
 
 - Create and host a package
 - Use the package created
+- logging basics
+- Using Microsoft Entry for authentication
 - Create web app that consumes internal web api
 - Create web app that consumes external web api
 
