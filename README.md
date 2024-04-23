@@ -16,8 +16,8 @@ This repository is for the CA FTB Workshop. The content will be made available h
 
 This workshop is for those who are interested in learning more about .NET and how it can be used to improve their development process:
 
-- Software development engineers (*the "dev" part*)
-- Systems engineers (*the "ops" part*)
+- Software development engineers (_the "dev" part_)
+- Systems engineers (_the "ops" part_)
 - Solution architects and software development leads
 - Quality engineers
 - Business analysts
@@ -30,7 +30,7 @@ Regardless of your level of experience with .NET, Azure, or GitHub, you will lea
 
 - This workshop is not intended to teach you how to code
   - When code is referenced in the workshop it will be provided to you or we will build it together live
-    - 🚨 *Spoiler Alert*: we will build and deploy a simple web application using .NET and Blazor WASM
+    - 🚨 _Spoiler Alert_: we will build and deploy a simple web application using .NET and Blazor WASM
   - If you have questions related to the provided code you may ask them during the Q&A section of the workshop
 - This workshop is not intended to teach you how to use Git Commands
   - You will be shown the commands needed primarily using the GitHub Desktop client application
