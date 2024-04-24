@@ -1,0 +1,21 @@
+@HostAddress = http://localhost:5000
+
+POST {{HostAddress}}/api/CalculateElo/1200/1000
+Accept: application/json
+
+###
+
+POST {{HostAddress}}/api/CalculateElo/1000/1200
+Accept: application/json
+
+###
+
+POST {{HostAddress}}/api/CalculateElo2/1200/1000
+Accept: application/json
+
+###
+
+POST {{HostAddress}}/api/CalculateElo2/1000/1200
+Accept: application/json
+
+###
