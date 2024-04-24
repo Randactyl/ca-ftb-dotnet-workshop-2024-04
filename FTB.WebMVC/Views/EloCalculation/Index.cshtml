@@ -1,0 +1,34 @@
+﻿@using FTB.Common
+@model FTB.Common.EloCalculationModel?
+@{
+    EloCalculationModel? elo = this.Model;
+    this.ViewData["Title"] = "Elo Calculation";
+}
+
+<form asp-action="Calculate" method="post">
+    <div class="form-group">
+        <label for="winnerRating">Winner Rating</label>
+        <input type="number" name="winnerRating" id="winnerRating" required>
+    </div>
+    <div class="form-group">
+        <label for="loserRating">Loser Rating</label>
+        <input type="number" name="loserRating" id="loserRating" required>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</form>
+
+<div>
+    @if(elo is not null)
+    {
+        <h2>Winner</h2>
+        <p>Rating: @elo.InitialWinnerRating</p>
+        <p>Change: @elo.WinnerScore</p>
+        <p>Final Rating: @elo.NewWinnerRating</p>
+        <h2>Loser</h2>
+        <p>Rating: @elo.InitialLoserRating</p>
+        <p>Change: @elo.LoserScore</p>
+        <p>Final Rating: @elo.NewLoserRating</p>
+    }
+</div>

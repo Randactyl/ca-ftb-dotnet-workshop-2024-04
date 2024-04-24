@@ -8,12 +8,14 @@ namespace FTB.WebMVC.Controllers;
 [Authorize]
 public class HomeController(ILogger<HomeController> logger) : Controller
 {
+    [AllowAnonymous]
     public IActionResult Index()
     {
         logger.LogInformation("Inside Index");
         return this.View();
     }
 
+    [AllowAnonymous]
     public IActionResult Privacy()
     {
         logger.LogInformation("Inside Privacy");

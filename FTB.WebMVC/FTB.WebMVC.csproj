@@ -15,4 +15,8 @@
     <PackageReference Include="Microsoft.Identity.Web.DownstreamApi" Version="2.15.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FTB.Common\FTB.Common.csproj" />
+  </ItemGroup>
+
 </Project>
