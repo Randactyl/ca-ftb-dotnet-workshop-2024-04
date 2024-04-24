@@ -10,12 +10,4 @@ Accept: application/json
 
 ###
 
-POST {{HostAddress}}/api/CalculateElo2/1200/1000
-Accept: application/json
-
-###
-
-POST {{HostAddress}}/api/CalculateElo2/1000/1200
-Accept: application/json
-
-###
+GET {{HostAddress}}/api/GetCarPicture
