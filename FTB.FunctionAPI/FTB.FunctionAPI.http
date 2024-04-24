@@ -1,0 +1,11 @@
+@HostAddress = http://localhost:7178
+
+POST {{HostAddress}}/api/EloCalculation/1200/1000
+Accept: application/json
+
+###
+
+POST {{HostAddress}}/api/EloCalculation/1000/1200
+Accept: application/json
+
+###

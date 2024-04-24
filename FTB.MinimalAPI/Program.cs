@@ -11,12 +11,12 @@ app.MapPost("/api/CalculateElo/{winnerRating}/{loserRating}", (double winnerRati
     EloCalculationModel elo = EloCalculator.CalculateElo(winnerRating, loserRating);
 
     Console.WriteLine();
-    Console.WriteLine($"New winner rating: {winnerRating + elo.WinnerRating}");
-    Console.WriteLine($"New loser rating: {loserRating + elo.LoserRating}");
+    Console.WriteLine($"New winner rating: {winnerRating + elo.WinnerScore}");
+    Console.WriteLine($"New loser rating: {loserRating + elo.LoserScore}");
 
     return elo;
 });
 
-app.MapPost("/api/CalculateElo2/{winnerRating}/{loserRating}", (double winnerRating, double loserRating) => EloCalculator.CalculateElo(winnerRating, loserRating));
+app.MapPost("/api/CalculateElo2/{winnerRating:double}/{loserRating:double}", EloCalculator.CalculateElo);
 
 app.Run();

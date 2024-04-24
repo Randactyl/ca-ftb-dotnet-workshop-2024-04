@@ -25,8 +25,8 @@
             {
                 InitialWinnerRating = winnerRating,
                 InitialLoserRating = loserRating,
-                WinnerRating = winnerScore,
-                LoserRating = loserScore,
+                WinnerScore = winnerScore,
+                LoserScore = loserScore,
                 NewWinnerRating = winnerRating + winnerScore,
                 NewLoserRating = loserRating + loserScore
             };

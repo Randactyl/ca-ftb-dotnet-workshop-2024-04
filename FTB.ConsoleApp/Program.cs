@@ -140,5 +140,5 @@ Console.WriteLine($"Loser rating before Elo calculation: {loserRating}");
 EloCalculationModel elo = EloCalculator.CalculateElo(winnerRating, loserRating);
 
 Console.WriteLine();
-Console.WriteLine($"New winner rating: {winnerRating + elo.WinnerRating}");
-Console.WriteLine($"New loser rating: {loserRating + elo.LoserRating}");
+Console.WriteLine($"New winner rating: {winnerRating + elo.WinnerScore}");
+Console.WriteLine($"New loser rating: {loserRating + elo.LoserScore}");

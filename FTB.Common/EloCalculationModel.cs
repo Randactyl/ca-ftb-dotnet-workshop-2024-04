@@ -9,11 +9,11 @@ public class EloCalculationModel
     // Initial rating of the loser before the game.
     public double InitialLoserRating { get; set; }
 
-    // Current rating of the winner.
-    public double WinnerRating { get; set; }
+    // Current score of the winner.
+    public double WinnerScore { get; set; }
 
-    // Current rating of the loser.
-    public double LoserRating { get; set; }
+    // Current score of the loser.
+    public double LoserScore { get; set; }
 
     // New calculated rating of the winner after the game.
     public double NewWinnerRating { get; set; }
