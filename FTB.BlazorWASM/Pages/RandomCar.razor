@@ -1,0 +1,23 @@
+﻿@page "/randomcar"
+
+@inject HttpClient Http
+
+<PageTitle>Random Car</PageTitle>
+
+<h3>Random Car</h3>
+
+<button class="btn btn-primary" @onclick="this.GetRandomCar">Get Random Car</button>
+
+@if (!string.IsNullOrEmpty(this.car))
+{
+    <img src="@(this.car)" alt="Random Car" />
+}
+
+@code {
+    private string car = string.Empty;
+
+    private async Task GetRandomCar()
+    {
+        this.car = await this.Http.GetStringAsync("api/GetCarPicture");
+    }
+}
