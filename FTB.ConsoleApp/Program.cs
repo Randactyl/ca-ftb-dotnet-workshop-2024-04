@@ -1,4 +1,6 @@
-﻿/*
+﻿using FTB.Common;
+
+/*
  * The first sample is a simple program that writes "Hello, World!" to the console.
  * The second sample reads a line of text from the console and writes it back to the console.
  */
@@ -116,14 +118,31 @@
 //string message = $"Hello, \"{name}\".\nYou are {age} years old.";
 //Console.WriteLine(message);
 
-string text = "false";
-if (bool.TryParse(text, out bool parsedText))
-{
-    Console.WriteLine($"The value is {parsedText}");
-}
-else
-{
-    Console.WriteLine("The value is not a boolean.");
-}
+//string text = "false";
+//if (bool.TryParse(text, out bool parsedText))
+//{
+//    Console.WriteLine($"The value is {parsedText}");
+//}
+//else
+//{
+//    Console.WriteLine("The value is not a boolean.");
+//}
 
-Console.Read();
+//Console.Read();
+
+// Test Elo Calculator
+double winnerRating = 1000;
+double loserRating = 1200;
+
+Console.WriteLine($"Winner rating before Elo calculation: {winnerRating}");
+Console.WriteLine($"Loser rating before Elo calculation: {loserRating}");
+
+(double newWinnerRating, double newLoserRating) = EloCalculator.CalculateElo(winnerRating, loserRating);
+
+Console.WriteLine();
+Console.WriteLine($"Winner Elo calculation: {newWinnerRating}");
+Console.WriteLine($"Loser Elo calculation: {newLoserRating}");
+Console.WriteLine();
+
+Console.WriteLine($"New winner rating: {winnerRating + newWinnerRating}");
+Console.WriteLine($"New loser rating: {loserRating + newLoserRating}");
