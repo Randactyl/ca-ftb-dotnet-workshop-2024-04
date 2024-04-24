@@ -1,0 +1,8 @@
+﻿@page "/"
+@namespace FTB.BlazorServerApp.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    this.Layout = "_Layout";
+}
+
+<component type="typeof(App)" render-mode="ServerPrerendered" />
