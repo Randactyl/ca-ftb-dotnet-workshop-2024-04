@@ -1,0 +1,72 @@
+﻿@page "/vote"
+
+@inject HttpClient Http
+
+<PageTitle>Vote</PageTitle>
+
+<h3>Vote</h3>
+
+@if (this.votes.Any() && this.currentVote != null)
+{
+    <div class="form-group">
+        <!-- display two images side by side -->
+        <div class="row">
+            <div class="col-md-6">
+                <img src="@(this.currentVote?.Car1Name)" alt="@(this.currentVote?.Car1Name) Car Image"/>
+                <button class="btn btn-primary" @onclick="() => this.VoteForCar(this.currentVote?.Car1Name)">Vote for @(this.currentVote?.Car1Name)</button>
+            </div>
+            <div class="col-md-6">
+                <img src="@(this.currentVote?.Car2Name)" alt="@(this.currentVote?.Car2Name) Car Image"/>
+                <button class="btn btn-primary" @onclick="() => this.VoteForCar(this.currentVote?.Car2Name)">Vote for @(this.currentVote?.Car2Name)</button>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <p>No votes yet. Click this <button class="btn btn-primary" @onclick="AddAutomobile">Add Automobile</button> to add an automobile for voting.</p>
+}
+
+@code {
+    List<VoteViewModel> votes = new();
+    VoteViewModel? currentVote;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await this.GetNewVotes();
+    }
+
+    private async Task GetNewVotes()
+    {
+        HttpResponseMessage response = await this.Http.PostAsync("GetVotes", null);
+        this.votes = await response.Content.ReadFromJsonAsync<List<VoteViewModel>>() ?? new List<VoteViewModel>();
+        this.currentVote = this.votes.FirstOrDefault();
+    }
+
+    private async Task AddAutomobile()
+    {
+        _ = await this.Http.PostAsync("GetNewAutomobile", null);
+        await this.GetNewVotes();
+    }
+
+    private async Task VoteForCar(string? carName)
+    {
+        if (string.IsNullOrEmpty(carName))
+        {
+            return;
+        }
+
+        if (this.currentVote == null)
+        {
+            return;
+        }
+
+        if (this.currentVote.Car1Name != carName && this.currentVote.Car2Name != carName)
+        {
+            return;
+        }
+
+        _ = await this.Http.PutAsync($"SubmitVote/{this.currentVote.Id}/{carName}", null);
+        await this.GetNewVotes();
+    }
+}
