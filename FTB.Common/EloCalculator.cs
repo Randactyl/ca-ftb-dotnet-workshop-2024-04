@@ -23,8 +23,12 @@
             // Return the new ratings for the winner and loser.
             EloCalculationModel elo = new()
             {
+                InitialWinnerRating = winnerRating,
+                InitialLoserRating = loserRating,
                 WinnerRating = winnerScore,
-                LoserRating = loserScore
+                LoserRating = loserScore,
+                NewWinnerRating = winnerRating + winnerScore,
+                NewLoserRating = loserRating + loserScore
             };
             return (elo);
         }

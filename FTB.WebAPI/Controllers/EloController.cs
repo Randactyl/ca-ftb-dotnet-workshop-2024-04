@@ -7,13 +7,10 @@ namespace FTB.WebAPI.Controllers;
 [ApiController]
 public class EloController(ILogger<EloController> logger) : ControllerBase
 {
-    [HttpGet]
-    public IActionResult Get()
+    [HttpPost("{winnerRating}/{loserRating}")]
+    public IActionResult Get(double winnerRating, double loserRating)
     {
         logger.LogInformation("Entered the Elo endpoint");
-
-        double winnerRating = 1200;
-        double loserRating = 1000;
 
         logger.LogInformation("--------------------");
         logger.LogInformation("Winner rating before Elo calculation: {0}", winnerRating);
@@ -22,8 +19,8 @@ public class EloController(ILogger<EloController> logger) : ControllerBase
         EloCalculationModel elo = EloCalculator.CalculateElo(winnerRating, loserRating);
 
         logger.LogInformation("--------------------");
-        logger.LogInformation("New winner rating: {0}", winnerRating + elo.WinnerRating);
-        logger.LogInformation("New loser rating: {0}", loserRating + elo.LoserRating);
+        logger.LogInformation("New winner rating: {0}", winnerRating + elo.NewWinnerRating);
+        logger.LogInformation("New loser rating: {0}", loserRating + elo.NewLoserRating);
         logger.LogInformation("--------------------");
 
         return this.Ok(elo);
