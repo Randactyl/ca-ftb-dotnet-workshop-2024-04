@@ -60,13 +60,18 @@ public class AutomobileRepository(AutomobileContext context, ThisAutomobileDoesN
 
     public IEnumerable<VoteModel> GetVotes()
     {
-        IEnumerable<VoteModel> votes = context.Votes.AsNoTracking();
+        IEnumerable<VoteModel> votes = context.Votes.Where(s => s.Winner == null).AsNoTracking();
         return votes;
     }
 
     public async Task SubmitVoteAsync(string id, string winner)
     {
         VoteModel existingVote = context.Votes.AsNoTracking().FirstOrDefault(vote => vote.Id == id) ?? throw new Exception("Vote does not exist!");
+        if (existingVote.Winner != null)
+        {
+            return;
+        }
+
         existingVote.Winner = winner;
 
         AutomobileModel car1 = context.Automobiles.AsNoTracking().FirstOrDefault(automobile => automobile.AutomobileName == existingVote.Car1Name) ?? throw new Exception("Car1 does not exist!");

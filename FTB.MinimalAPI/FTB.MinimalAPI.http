@@ -11,3 +11,22 @@ Accept: application/json
 ###
 
 GET {{HostAddress}}/api/GetCarPicture
+
+###
+
+GET {{HostAddress}}/api/GetResults
+Accept: application/json
+
+###
+
+POST {{HostAddress}}/api/GetNewAutomobile
+Accept: application/json
+
+###
+
+POST {{HostAddress}}/api/GetVotes
+Accept: application/json
+
+###
+
+PUT {{HostAddress}}/api/SubmitVote/ffaed31e-ebde-40dc-a4cd-1742c83cfe6c/Count%20Giggles
