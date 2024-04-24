@@ -10,7 +10,9 @@
 
 @if (!string.IsNullOrEmpty(this.car))
 {
-    <img src="@(this.car)" alt="Random Car" />
+    <p>
+        <img src="@(this.car)" alt="Random Car" />
+    </p>
 }
 
 @code {
@@ -18,6 +20,6 @@
 
     private async Task GetRandomCar()
     {
-        this.car = await this.Http.GetStringAsync("api/GetCarPicture");
+        this.car = await this.Http.GetStringAsync("GetCarPicture");
     }
 }

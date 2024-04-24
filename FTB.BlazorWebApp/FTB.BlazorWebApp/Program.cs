@@ -1,4 +1,3 @@
-using FTB.BlazorWebApp.Client.Pages;
 using FTB.BlazorWebApp.Components;
 
 WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
