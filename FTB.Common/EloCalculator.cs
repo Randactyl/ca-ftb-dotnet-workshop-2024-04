@@ -7,7 +7,7 @@
         private const int KFactor = 32;
 
         // This method calculates the new Elo ratings for the winner and loser of a game.
-        public static (double, double) CalculateElo(double winnerRating, double loserRating)
+        public static EloCalculationModel CalculateElo(double winnerRating, double loserRating)
         {
             // Calculate the expected score for each player.
             // This is done using the formula: 1 / (1 + 10 ^ ((opponent's rating - player's rating) / 400))
@@ -21,7 +21,12 @@
             double loserScore = KFactor * (0 - loserExpectedScore);
 
             // Return the new ratings for the winner and loser.
-            return (winnerScore, loserScore);
+            EloCalculationModel elo = new()
+            {
+                WinnerRating = winnerScore,
+                LoserRating = loserScore
+            };
+            return (elo);
         }
     }
 }

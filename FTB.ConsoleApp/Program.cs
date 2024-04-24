@@ -137,12 +137,8 @@ double loserRating = 1200;
 Console.WriteLine($"Winner rating before Elo calculation: {winnerRating}");
 Console.WriteLine($"Loser rating before Elo calculation: {loserRating}");
 
-(double newWinnerRating, double newLoserRating) = EloCalculator.CalculateElo(winnerRating, loserRating);
+EloCalculationModel elo = EloCalculator.CalculateElo(winnerRating, loserRating);
 
 Console.WriteLine();
-Console.WriteLine($"Winner Elo calculation: {newWinnerRating}");
-Console.WriteLine($"Loser Elo calculation: {newLoserRating}");
-Console.WriteLine();
-
-Console.WriteLine($"New winner rating: {winnerRating + newWinnerRating}");
-Console.WriteLine($"New loser rating: {loserRating + newLoserRating}");
+Console.WriteLine($"New winner rating: {winnerRating + elo.WinnerRating}");
+Console.WriteLine($"New loser rating: {loserRating + elo.LoserRating}");
