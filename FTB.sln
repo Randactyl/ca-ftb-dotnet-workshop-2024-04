@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FTB.MinimalAPI", "FTB.Minim
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FTB.FunctionAPI", "FTB.FunctionAPI\FTB.FunctionAPI.csproj", "{AF1C2427-45B5-4D2A-9794-80FDB1B43B0D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FTB.WebMVC", "FTB.WebMVC\FTB.WebMVC.csproj", "{8AA93C64-D0E7-4141-937B-9629B93F628D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{AF1C2427-45B5-4D2A-9794-80FDB1B43B0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF1C2427-45B5-4D2A-9794-80FDB1B43B0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF1C2427-45B5-4D2A-9794-80FDB1B43B0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AA93C64-D0E7-4141-937B-9629B93F628D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AA93C64-D0E7-4141-937B-9629B93F628D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AA93C64-D0E7-4141-937B-9629B93F628D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AA93C64-D0E7-4141-937B-9629B93F628D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
