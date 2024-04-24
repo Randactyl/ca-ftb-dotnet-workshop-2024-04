@@ -1,0 +1,46 @@
+﻿@page "/elo-calculator"
+
+@rendermode InteractiveAuto
+
+<PageTitle>Elo Calculator</PageTitle>
+
+<h3>Elo Calculator</h3>
+
+<div class="form-group">
+    <label for="winnerRating">Winner Rating</label>
+    <input type="number" name="winnerRating" id="winnerRating" @bind="this.winnerRating" required>
+</div>
+<div class="form-group">
+    <label for="loserRating">Loser Rating</label>
+    <input type="number" name="loserRating" id="loserRating" @bind="this.loserRating" required>
+</div>
+<div class="form-group">
+    <button class="btn btn-primary" @onclick="this.CalculateElo">Submit</button>
+    <button class="btn btn-secondary" @onclick="() => { this.elo  = null; }">Clear</button>
+</div>
+
+@if (this.elo is not null)
+{
+    <h2>Winner</h2>
+    <p>Rating: @(this.elo.InitialWinnerRating)</p>
+    <p>Change: @(this.elo.WinnerScore)</p>
+    <p>Final Rating: @(this.elo.NewWinnerRating)</p>
+    <h2>Loser</h2>
+    <p>Rating: @(this.elo.InitialLoserRating)</p>
+    <p>Change: @(this.elo.LoserScore)</p>
+    <p>Final Rating: @(this.elo.NewLoserRating)</p>
+}
+
+@code {
+    private EloCalculationModel? elo;
+    private double? winnerRating;
+    private double? loserRating;
+
+    private void CalculateElo()
+    {
+        if (this.winnerRating is not null && this.loserRating is not null)
+        {
+            this.elo = Common.EloCalculator.CalculateElo((double)this.winnerRating, (double)this.loserRating);
+        }
+    }
+}

@@ -17,6 +17,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FTB.WebMVC", "FTB.WebMVC\FT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FTB.BlazorServerApp", "FTB.BlazorServerApp\FTB.BlazorServerApp.csproj", "{DAE50F3A-4E96-4528-B058-519E9722CBAA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FTB.BlazorWebApp", "FTB.BlazorWebApp\FTB.BlazorWebApp\FTB.BlazorWebApp.csproj", "{08D881B0-7D2E-48FC-8C26-15C01B1AA0BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FTB.BlazorWebApp.Client", "FTB.BlazorWebApp\FTB.BlazorWebApp.Client\FTB.BlazorWebApp.Client.csproj", "{89321A7B-3973-4DC9-B737-2B7F67C30415}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +55,14 @@ Global
 		{DAE50F3A-4E96-4528-B058-519E9722CBAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DAE50F3A-4E96-4528-B058-519E9722CBAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DAE50F3A-4E96-4528-B058-519E9722CBAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08D881B0-7D2E-48FC-8C26-15C01B1AA0BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08D881B0-7D2E-48FC-8C26-15C01B1AA0BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08D881B0-7D2E-48FC-8C26-15C01B1AA0BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08D881B0-7D2E-48FC-8C26-15C01B1AA0BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89321A7B-3973-4DC9-B737-2B7F67C30415}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89321A7B-3973-4DC9-B737-2B7F67C30415}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89321A7B-3973-4DC9-B737-2B7F67C30415}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89321A7B-3973-4DC9-B737-2B7F67C30415}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
