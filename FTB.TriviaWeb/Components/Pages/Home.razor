@@ -1,7 +1,64 @@
 ﻿@page "/"
 
+@inject OpenTriviaService OpenTriviaService
+
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+
+@if (this.categories.TriviaCategories.Any())
+{
+    <ul>
+        @foreach (TriviaCategory category in this.categories.TriviaCategories)
+        {
+            <li>@category.Name <button class="btn btn-primary" @onclick="() => this.GetQuestions(category.Id)">@category.Id</button></li>
+        }
+    </ul>
+}
+
+@if (this.openTrivia.Results.Any())
+{
+    <h2>Trivia Questions</h2>
+    <ul>
+        @foreach (Result question in this.openTrivia.Results)
+        {
+            <li>
+                @question.Question<br />
+                <ul>
+                    @foreach (string answer in question.IncorrectAnswers)
+                    {
+                        <li>@answer</li>
+                    }
+                    <li>@question.CorrectAnswer</li>
+                </ul>
+                @question.Difficulty<br />
+                @question.Category<br />
+                @question.Type
+            </li>
+        }
+    </ul>
+}
+
+
+@code {
+    private CategoryModel categories = new();
+    private OpenTriviaModel openTrivia = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.categories = await this.OpenTriviaService.GetCategories();
+        this.openTrivia = await this.OpenTriviaService.GetQuestions(3);
+        // this.openTrivia = await this.OpenTriviaService.GetQuestions(3, "21");
+        // this.openTrivia = await this.OpenTriviaService.GetQuestions(3, "21", Difficulty.Easy);
+        // this.openTrivia = await this.OpenTriviaService.GetQuestions(10, "21", null, TypeEnum.Boolean);
+    }
+
+    private async Task GetQuestions(string categoryId)
+    {
+        Console.WriteLine("HERE");
+        this.openTrivia = await this.OpenTriviaService.GetQuestions(3, categoryId);
+        this.StateHasChanged();
+    }
+}

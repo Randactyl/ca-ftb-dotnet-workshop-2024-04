@@ -13,7 +13,7 @@
         public long ResponseCode { get; set; }
 
         [JsonProperty("results")]
-        public List<Result> Results { get; set; }
+        public List<Result> Results { get; set; } = new List<Result>();
     }
 
     public partial class Result
@@ -25,23 +25,21 @@
         public Difficulty Difficulty { get; set; }
 
         [JsonProperty("category")]
-        public Category Category { get; set; }
+        public string Category { get; set; } = string.Empty;
 
         [JsonProperty("question")]
-        public string Question { get; set; }
+        public string Question { get; set; } = string.Empty;
 
         [JsonProperty("correct_answer")]
-        public string CorrectAnswer { get; set; }
+        public string CorrectAnswer { get; set; } = string.Empty;
 
         [JsonProperty("incorrect_answers")]
-        public List<string> IncorrectAnswers { get; set; }
+        public List<string> IncorrectAnswers { get; set; } = new List<string>();
     }
 
-    public enum Category { Sports };
+    public enum Difficulty { Easy, Medium, Hard };
 
-    public enum Difficulty { Easy };
-
-    public enum TypeEnum { Multiple };
+    public enum TypeEnum { Multiple, Boolean };
 
     internal static class Converter
     {
@@ -51,46 +49,11 @@
             DateParseHandling = DateParseHandling.None,
             Converters =
             {
-                CategoryConverter.Singleton,
                 DifficultyConverter.Singleton,
                 TypeEnumConverter.Singleton,
                 new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
             },
         };
-    }
-
-    internal class CategoryConverter : JsonConverter
-    {
-        public override bool CanConvert(Type t) => t == typeof(Category) || t == typeof(Category?);
-
-        public override object ReadJson(JsonReader reader, Type t, object existingValue, JsonSerializer serializer)
-        {
-            if (reader.TokenType == JsonToken.Null) return null;
-            string? value = serializer.Deserialize<string>(reader);
-            if (value == "Sports")
-            {
-                return Category.Sports;
-            }
-            throw new Exception("Cannot unmarshal type Category");
-        }
-
-        public override void WriteJson(JsonWriter writer, object untypedValue, JsonSerializer serializer)
-        {
-            if (untypedValue == null)
-            {
-                serializer.Serialize(writer, null);
-                return;
-            }
-            Category value = (Category)untypedValue;
-            if (value == Category.Sports)
-            {
-                serializer.Serialize(writer, "Sports");
-                return;
-            }
-            throw new Exception("Cannot marshal type Category");
-        }
-
-        public static readonly CategoryConverter Singleton = new CategoryConverter();
     }
 
     internal class DifficultyConverter : JsonConverter

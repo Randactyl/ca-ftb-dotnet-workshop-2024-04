@@ -6,15 +6,15 @@
     public partial class CategoryModel
     {
         [JsonProperty("trivia_categories")]
-        public List<TriviaCategory> TriviaCategories { get; set; }
+        public List<TriviaCategory> TriviaCategories { get; set; } = new List<TriviaCategory>();
     }
 
     public partial class TriviaCategory
     {
         [JsonProperty("id")]
-        public long Id { get; set; }
+        public string Id { get; set; } = string.Empty;
 
         [JsonProperty("name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 }

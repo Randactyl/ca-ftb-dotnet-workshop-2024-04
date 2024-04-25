@@ -1,3 +1,4 @@
+using FTB.TriviaLib;
 using FTB.TriviaWeb.Components;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -5,6 +6,9 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<OpenTriviaService>();
 
 WebApplication app = builder.Build();
 
