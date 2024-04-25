@@ -6,28 +6,36 @@
 
 <h3>Vote History</h3>
 
-<h1>Vote Explorer (@(this.votes.Count()))</h1>
-<table class="table">
-    <thead>
-    <tr>
-        <th>Id</th>
-        <th>Car 1</th>
-        <th>Car 2</th>
-        <th>Score</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (VoteViewModel item in this.votes.OrderByDescending(s => s.Score).ThenBy(s => s.Car1Name).ThenBy(s => s.Car2Name))
-    {
+@if (this.isLoading)
+{
+    <h1>Votes</h1>
+    <p><img src="loading.gif" alt="loading" /></p>
+}
+else
+{
+    <h1>Votes (@(this.Votes.Count())):</h1>
+    <table class="table">
+        <thead>
         <tr>
-            <td>@item.Id</td>
-            <td class="@(item.Winner == item.Car1Name ? "winner" : string.Empty)">@item.Car1Name</td>
-            <td class="@(item.Winner == item.Car2Name ? "winner" : string.Empty)">@item.Car2Name</td>
-            <td>@item.Score</td>
+            <th>Id</th>
+            <th>Car 1</th>
+            <th>Car 2</th>
+            <th>Score</th>
         </tr>
-    }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+        @foreach (VoteViewModel item in this.Votes.OrderByDescending(s => s.Score).ThenBy(s => s.Car1Name).ThenBy(s => s.Car2Name))
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td class="@(item.Winner == item.Car1Name ? "winner" : string.Empty)">@item.Car1Name</td>
+                <td class="@(item.Winner == item.Car2Name ? "winner" : string.Empty)">@item.Car2Name</td>
+                <td>@item.Score</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
 
 <style>
     td.winner {
@@ -36,11 +44,13 @@
 </style>
 
 @code {
-    private List<VoteViewModel> votes { get; set; } = [];
+    private List<VoteViewModel> Votes { get; set; } = [];
+    private bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
         HttpResponseMessage response = await this.Http.GetAsync("GetAllVotes");
-        this.votes = await response.Content.ReadFromJsonAsync<List<VoteViewModel>>() ?? [];
+        this.Votes = await response.Content.ReadFromJsonAsync<List<VoteViewModel>>() ?? [];
+        this.isLoading = false;
     }
 }

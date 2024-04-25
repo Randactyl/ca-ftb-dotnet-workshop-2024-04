@@ -5,43 +5,51 @@
 <PageTitle>Results</PageTitle>
 
 <div class="text-center">
-    <h1 class="display-4">Results (@(this.automobiles.Count)):</h1>
-
-    @if (this.automobiles.Count > 0)
+    @if (this.isLoading)
     {
-        <div class="form-group">
-            <div class="row">
-                @foreach (AutomobileViewModel automobile in this.automobiles.Where(s => s.Wins > 0 || s.Losses > 0).OrderByDescending(s => s.Score).ThenByDescending(s => s.Wins).ThenBy(s => s.Losses).ThenBy(s => s.AutomobileName))
-                {
-                    <div class="col-md-3">
-                        <h4>@automobile.AutomobileName <button class="btn btn-danger" @onclick="() => this.DeleteAutomobile(automobile.AutomobileName)">Delete</button></h4>
-                        <img src="@automobile.AutomobileImage" class="car" alt="@automobile.AutomobileName Car Image" />
-                        <span><strong>Score</strong>: @automobile.Score.ToString("F3") <strong>Record</strong>: @automobile.Wins-@automobile.Losses</span>
-                    </div>
-                }
-            </div>
-        </div>
-        if (this.automobiles.Any(s => s is { Wins: 0, Losses: 0 }))
+        <h1 class="display-4">Results</h1>
+        <p><img src="loading.gif" alt="loading" /></p>
+    }
+    else
+    {
+        <h1 class="display-4">Results (@(this.automobiles.Count)):</h1>
+
+        @if (this.automobiles.Count > 0)
         {
-            <hr />
-            <h2 class="display-4">No votes yet:</h2>
             <div class="form-group">
                 <div class="row">
-                    @foreach (AutomobileViewModel automobile in this.automobiles.Where(s => s is { Wins: 0, Losses: 0 }).OrderBy(s => s.AutomobileName))
+                    @foreach (AutomobileViewModel automobile in this.automobiles.Where(s => s.Wins > 0 || s.Losses > 0).OrderByDescending(s => s.Score).ThenByDescending(s => s.Wins).ThenByDescending(s => s.Losses).ThenBy(s => s.AutomobileName))
                     {
                         <div class="col-md-3">
                             <h4>@automobile.AutomobileName <button class="btn btn-danger" @onclick="() => this.DeleteAutomobile(automobile.AutomobileName)">Delete</button></h4>
-                            <img src="@automobile.AutomobileImage" class="car" alt="@automobile.AutomobileName Car Image" />
+                            <img src="@automobile.AutomobileImage" class="car" alt="@automobile.AutomobileName Car Image"/>
                             <span><strong>Score</strong>: @automobile.Score.ToString("F3") <strong>Record</strong>: @automobile.Wins-@automobile.Losses</span>
                         </div>
                     }
                 </div>
             </div>
+            if (this.automobiles.Any(s => s is { Wins: 0, Losses: 0 }))
+            {
+                <hr/>
+                <h2 class="display-4">No votes yet:</h2>
+                <div class="form-group">
+                    <div class="row">
+                        @foreach (AutomobileViewModel automobile in this.automobiles.Where(s => s is { Wins: 0, Losses: 0 }).OrderBy(s => s.AutomobileName))
+                        {
+                            <div class="col-md-3">
+                                <h4>@automobile.AutomobileName <button class="btn btn-danger" @onclick="() => this.DeleteAutomobile(automobile.AutomobileName)">Delete</button></h4>
+                                <img src="@automobile.AutomobileImage" class="car" alt="@automobile.AutomobileName Car Image"/>
+                                <span><strong>Score</strong>: @automobile.Score.ToString("F3") <strong>Record</strong>: @automobile.Wins-@automobile.Losses</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
         }
-    }
-    else
-    {
-        <p>No automobiles found.</p>
+        else
+        {
+            <p>No automobiles found.</p>
+        }
     }
 </div>
 
@@ -69,6 +77,7 @@
 
 @code {
     private List<AutomobileViewModel> automobiles = [];
+    private bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -77,12 +86,15 @@
 
     private async Task GetResults()
     {
+        this.isLoading = true;
         HttpResponseMessage response = await this.Http.GetAsync("GetResults");
         this.automobiles = await response.Content.ReadFromJsonAsync<List<AutomobileViewModel>>() ?? [];
+        this.isLoading = false;
     }
 
     private async Task DeleteAutomobile(string automobileName)
     {
+        this.isLoading = true;
         HttpResponseMessage response = await this.Http.DeleteAsync($"DeleteAutomobile/{automobileName}");
         await this.GetResults();
     }
