@@ -29,4 +29,19 @@ Accept: application/json
 
 ###
 
+GET {{HostAddress}}/api/GetAllVotes
+Accept: application/json
+
+###
+
 PUT {{HostAddress}}/api/SubmitVote/ffaed31e-ebde-40dc-a4cd-1742c83cfe6c/Count%20Giggles
+
+###
+
+DELETE {{HostAddress}}/api/ResetVotes
+
+###
+
+DELETE {{HostAddress}}/api/DeleteAutomobile/Count%20Giggles
+
+###

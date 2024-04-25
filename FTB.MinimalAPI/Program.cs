@@ -9,6 +9,7 @@ string connectionString = builder.Configuration.GetConnectionString("AutomobileD
 builder.Services.AddSqlite<AutomobileContext>(connectionString);
 
 builder.Services.AddScoped<AutomobileRepository>();
+builder.Services.AddScoped<IAutomobileRepository>(sp => sp.GetRequiredService<AutomobileRepository>());
 builder.Services.AddScoped<ThisAutomobileDoesNotExistService>();
 
 builder.Services.AddCors();
@@ -28,12 +29,18 @@ app.MapPost("/api/CalculateElo/{winnerRating:double}/{loserRating:double}", EloC
 
 app.MapGet("/api/GetCarPicture", (ThisAutomobileDoesNotExistService service) => service.GetRandomAutomobileImageAsync());
 
-app.MapPost("/api/GetNewAutomobile", ([FromServices]AutomobileRepository repo) => repo.GetAutomobileAsync() );
+app.MapPost("/api/GetNewAutomobile", ([FromServices] IAutomobileRepository repo) => repo.GetAutomobileAsync() );
 
-app.MapGet("/api/GetResults", ([FromServices]AutomobileRepository repo) => repo.GetResults());
+app.MapGet("/api/GetResults", ([FromServices] IAutomobileRepository repo) => repo.GetResults());
 
-app.MapPost("/api/GetVotes", ([FromServices] AutomobileRepository repo) => repo.GetVotes());
+app.MapPost("/api/GetVotes", ([FromServices] IAutomobileRepository repo) => repo.GetVotes());
 
-app.MapPut("/api/SubmitVote/{voteId}/{winnerCarName}", (string voteId, string winnerCarName, [FromServices] AutomobileRepository repo) => repo.SubmitVoteAsync(voteId, winnerCarName));
+app.MapGet("/api/GetAllVotes", ([FromServices] IAutomobileRepository repo) => repo.GetAllVotes());
+
+app.MapPut("/api/SubmitVote/{voteId}/{winnerCarName}", (string voteId, string winnerCarName, [FromServices] IAutomobileRepository repo) => repo.SubmitVoteAsync(voteId, winnerCarName));
+
+app.MapDelete("/api/ResetVotes", ([FromServices] IAutomobileRepository repo) => repo.ResetVotes());
+
+app.MapDelete("/api/DeleteAutomobile/{automobileName}", (string automobileName, [FromServices] IAutomobileRepository repo) => repo.DeleteAutomobile(automobileName));
 
 app.Run();

@@ -12,11 +12,11 @@
         <!-- display two images side by side -->
         <div class="row">
             <div class="col-md-6">
-                <img src="@(this.currentVote?.Car1Name)" alt="@(this.currentVote?.Car1Name) Car Image"/>
+                <img src="@(this.currentVote?.Car1Image)" alt="@(this.currentVote?.Car1Name) Car Image"/>
                 <button class="btn btn-primary" @onclick="() => this.VoteForCar(this.currentVote?.Car1Name)">Vote for @(this.currentVote?.Car1Name)</button>
             </div>
             <div class="col-md-6">
-                <img src="@(this.currentVote?.Car2Name)" alt="@(this.currentVote?.Car2Name) Car Image"/>
+                <img src="@(this.currentVote?.Car2Image)" alt="@(this.currentVote?.Car2Name) Car Image"/>
                 <button class="btn btn-primary" @onclick="() => this.VoteForCar(this.currentVote?.Car2Name)">Vote for @(this.currentVote?.Car2Name)</button>
             </div>
         </div>
@@ -24,11 +24,15 @@
 }
 else
 {
-    <p>No votes yet. Click this <button class="btn btn-primary" @onclick="AddAutomobile">Add Automobile</button> to add an automobile for voting.</p>
+    <p>No votes available.</p>
+    <p>
+        <button class="btn btn-primary" @onclick="this.AddAutomobile">Add Another Automobile</button>
+        <button class="btn btn-danger" @onclick="this.ResetVotes">Reset All Votes</button>
+    </p>
 }
 
 @code {
-    List<VoteViewModel> votes = new();
+    List<VoteViewModel> votes = [];
     VoteViewModel? currentVote;
 
     protected override async Task OnInitializedAsync()
@@ -39,13 +43,33 @@ else
     private async Task GetNewVotes()
     {
         HttpResponseMessage response = await this.Http.PostAsync("GetVotes", null);
-        this.votes = await response.Content.ReadFromJsonAsync<List<VoteViewModel>>() ?? new List<VoteViewModel>();
+        this.votes = await response.Content.ReadFromJsonAsync<List<VoteViewModel>>() ?? [];
+        this.votes.Shuffle();
+        Random random = new();
+        foreach (VoteViewModel voteViewModel in this.votes)
+        {
+            bool randomBool = random.Next(2) == 0;
+            if (!randomBool)
+            {
+                continue;
+            }
+
+            (voteViewModel.Car2Name, voteViewModel.Car1Name) = (voteViewModel.Car1Name, voteViewModel.Car2Name);
+            (voteViewModel.Car2Image, voteViewModel.Car1Image) = (voteViewModel.Car1Image, voteViewModel.Car2Image);
+        }
+
         this.currentVote = this.votes.FirstOrDefault();
     }
 
     private async Task AddAutomobile()
     {
         _ = await this.Http.PostAsync("GetNewAutomobile", null);
+        await this.GetNewVotes();
+    }
+
+    private async Task ResetVotes()
+    {
+        _ = await this.Http.DeleteAsync("ResetVotes");
         await this.GetNewVotes();
     }
 
@@ -67,6 +91,11 @@ else
         }
 
         _ = await this.Http.PutAsync($"SubmitVote/{this.currentVote.Id}/{carName}", null);
-        await this.GetNewVotes();
+        this.votes.RemoveAll(s => s.Id == this.currentVote.Id);
+        this.currentVote = this.votes.FirstOrDefault();
+        if (this.currentVote is null)
+        {
+            await this.GetNewVotes();
+        }
     }
 }

@@ -55,7 +55,7 @@ Regardless of Visual Studio Subscription, the other tools you will need:
 
 ## Agenda
 
-### Day 1 and 2: April 23 and 24
+### Day 1: April 23
 
 - Basics of Visual Studio
 - .NET Architecture
@@ -65,22 +65,29 @@ Regardless of Visual Studio Subscription, the other tools you will need:
 - Basics of object-oriented programming
 - Create console application
 - Create class library
-- Create web application
-  - MVC
-  - Blazor
+
+### Day 2: April 24
+
 - Create web api
   - MVC
   - Minimal API
   - Function App
+- Create web application
+  - MVC
+  - Blazor
 - Containerize application
+- Using Microsoft Entra ID for authentication
+- logging basics
+- Create web app that consumes internal web api
 
-### Day 3 and 4: April 25 and 26
+### Day 3: April 25
+
+- Create web app that consumes internal web api
+
+### Day 4: April 26
 
 - Create and host a package
 - Use the package created
-- logging basics
-- Using Microsoft Entra ID for authentication
-- Create web app that consumes internal web api
 - Create web app that consumes external web api
 
 ## Learn More

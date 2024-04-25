@@ -8,7 +8,11 @@ public interface IAutomobileRepository
 {
     public Task<AutomobileModel> GetAutomobileAsync();
     public IEnumerable<AutomobileModel> GetResults();
-    public IEnumerable<VoteModel> GetVotes();
+    public IEnumerable<VoteViewModel> GetVotes();
+    public IEnumerable<VoteViewModel> GetAllVotes();
+    public Task SubmitVoteAsync(string id, string winner);
+    public Task ResetVotes();
+    public void DeleteAutomobile(string automobileName);
 }
 
 public class AutomobileRepository(AutomobileContext context, ThisAutomobileDoesNotExistService automobileDoesNotExistService) : IAutomobileRepository
@@ -58,10 +62,42 @@ public class AutomobileRepository(AutomobileContext context, ThisAutomobileDoesN
         return automobiles;
     }
 
-    public IEnumerable<VoteModel> GetVotes()
+    public IEnumerable<VoteViewModel> GetVotes()
     {
-        IEnumerable<VoteModel> votes = context.Votes.Where(s => s.Winner == null).AsNoTracking();
-        return votes;
+        List<VoteViewModel> voteVMs = [];
+        IEnumerable<VoteModel> votes = context.Votes.AsNoTracking().Where(s => s.Winner == null);
+        foreach (VoteModel vote in votes)
+        {
+            AutomobileModel car1 = context.Automobiles.AsNoTracking().FirstOrDefault(automobile => automobile.AutomobileName == vote.Car1Name) ?? throw new Exception("Car1 does not exist!");
+            AutomobileModel car2 = context.Automobiles.AsNoTracking().FirstOrDefault(automobile => automobile.AutomobileName == vote.Car2Name) ?? throw new Exception("Car2 does not exist!");
+
+            voteVMs.Add(new VoteViewModel
+            {
+                Id = vote.Id,
+                Car1Name = vote.Car1Name,
+                Car1Image = car1.AutomobileImage,
+                Car2Name = vote.Car2Name,
+                Car2Image = car2.AutomobileImage,
+                Score = vote.Score
+            });
+        }
+
+        return voteVMs;
+    }
+
+    public IEnumerable<VoteViewModel> GetAllVotes()
+    {
+        IEnumerable<VoteModel> votes = context.Votes.AsNoTracking();
+        IEnumerable<VoteViewModel> voteVMs = votes.Select(vote => new VoteViewModel
+        {
+            Id = vote.Id,
+            Car1Name = vote.Car1Name,
+            Car2Name = vote.Car2Name,
+            Score = vote.Score,
+            Winner = vote.Winner
+        });
+
+        return voteVMs;
     }
 
     public async Task SubmitVoteAsync(string id, string winner)
@@ -102,5 +138,72 @@ public class AutomobileRepository(AutomobileContext context, ThisAutomobileDoesN
         
         context.Votes.Update(existingVote);
         await context.SaveChangesAsync();
+    }
+
+    public async Task ResetVotes()
+    {
+        IEnumerable<VoteModel> votes = context.Votes.AsNoTracking().Where(vote => vote.Winner != null);
+        foreach (VoteModel vote in votes)
+        {
+            vote.Winner = null;
+            vote.Score = 0;
+            context.Votes.Update(vote);
+            await context.SaveChangesAsync();
+        }
+
+        IEnumerable<AutomobileModel> automobiles = context.Automobiles.AsNoTracking();
+        foreach (AutomobileModel automobile in automobiles)
+        {
+            automobile.Wins = 0;
+            automobile.Losses = 0;
+            automobile.Score = 1200;
+            context.Automobiles.Update(automobile);
+            await context.SaveChangesAsync();
+        }
+    }
+
+    public void DeleteAutomobile(string automobileName)
+    {
+        List<VoteModel> votes = context.Votes.Where(s => s.Car1Name == automobileName || s.Car2Name == automobileName).ToList();
+        foreach (VoteModel vote in votes)
+        {
+            context.Votes.Remove(vote);
+            context.SaveChanges();
+
+            if (string.IsNullOrEmpty(vote.Winner))
+            {
+                continue;
+            }
+
+            string competitor = vote.Car1Name == automobileName ? vote.Car2Name : vote.Car1Name;
+            AutomobileModel? competingCar = context.Automobiles.AsNoTracking().FirstOrDefault(s => s.AutomobileName == competitor);
+            if (competingCar is null)
+            {
+                continue;
+            }
+
+            if (vote.Winner == competitor)
+            {
+                competingCar.Score -= vote.Score;
+                competingCar.Wins--;
+            }
+            else
+            {
+                competingCar.Score += vote.Score;
+                competingCar.Losses--;
+            }
+
+            context.Automobiles.Update(competingCar);
+            context.SaveChanges();
+        }
+
+        AutomobileModel? carByName = context.Automobiles.AsNoTracking().FirstOrDefault(s => s.AutomobileName == automobileName);
+        if (carByName is null)
+        {
+            return;
+        }
+
+        context.Automobiles.Remove(carByName);
+        context.SaveChanges();
     }
 }

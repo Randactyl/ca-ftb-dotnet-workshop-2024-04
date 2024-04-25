@@ -1,0 +1,46 @@
+﻿@page "/vote-history"
+
+@inject HttpClient Http
+
+<PageTitle>Vote History</PageTitle>
+
+<h3>Vote History</h3>
+
+<h1>Vote Explorer (@(this.votes.Count()))</h1>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Car 1</th>
+        <th>Car 2</th>
+        <th>Score</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (VoteViewModel item in this.votes.OrderByDescending(s => s.Score).ThenBy(s => s.Car1Name).ThenBy(s => s.Car2Name))
+    {
+        <tr>
+            <td>@item.Id</td>
+            <td class="@(item.Winner == item.Car1Name ? "winner" : string.Empty)">@item.Car1Name</td>
+            <td class="@(item.Winner == item.Car2Name ? "winner" : string.Empty)">@item.Car2Name</td>
+            <td>@item.Score</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<style>
+    td.winner {
+        font-weight: bold;
+    }
+</style>
+
+@code {
+    private List<VoteViewModel> votes { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        HttpResponseMessage response = await this.Http.GetAsync("GetAllVotes");
+        this.votes = await response.Content.ReadFromJsonAsync<List<VoteViewModel>>() ?? [];
+    }
+}
