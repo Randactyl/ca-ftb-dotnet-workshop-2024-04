@@ -82,13 +82,12 @@ Regardless of Visual Studio Subscription, the other tools you will need:
 
 ### Day 3: April 25
 
-- Create web app that consumes internal web api
+- Create web app that consumes internal web api (_Automobile Does Not Exist_)
 - Create and host a package
 
 ### Day 4: April 26
 
-- Use the package created
-- Create web app that consumes external web api
+- Create web app that consumes external web api (_Open Trivia DB_)
 
 ## Learn More
 
