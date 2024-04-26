@@ -50,10 +50,14 @@ else
     bool answered = false;
     string? answerResult;
 
+    private List<ScoreViewModel> scores = [];
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            this.scores = await this.LocalStorage.GetItemAsync<List<ScoreViewModel>>("score") ?? [];
+
             this.token = await this.LocalStorage.GetItemAsync<string>("token");
             if (string.IsNullOrEmpty(this.token))
             {
@@ -103,18 +107,36 @@ else
 
         this.StateHasChanged();
     }
-    private void CheckAnswer()
+    private async Task CheckAnswer()
     {
         answered = true;
+        var currentScoreModel = scores.FirstOrDefault(x => x.Category == this.Category && x.Difficulty == this.Difficulty && x.GameType == this.GameType);
+        if (currentScoreModel is null)
+        {
+            currentScoreModel = new ScoreViewModel
+            {
+                Category = this.Category,
+                Difficulty = this.Difficulty,
+                GameType = this.GameType,
+                NumberOfQuestions = 0,
+                NumberOfCorrectAnswers = 0
+            };
+            scores.Add(currentScoreModel);
+        }
+
+        currentScoreModel.NumberOfQuestions++;
+
         if (selectedAnswer == currentQuestion.CorrectAnswer)
         {
             answerResult = "Correct!";
+            currentScoreModel.NumberOfCorrectAnswers++;
         }
         else
         {
             answerResult = "Incorrect!";
         }
 
+        await this.LocalStorage.SetItemAsync("score", this.scores);
         this.StateHasChanged();
     }
     private void RedirectToHome()

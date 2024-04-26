@@ -2,6 +2,8 @@
 @rendermode InteractiveServer
 
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject OpenTriviaService OpenTriviaService
+@inject NavigationManager NavigationManager
 
 <PageTitle>Score Board</PageTitle>
 
@@ -33,6 +35,15 @@
             </tr>
         }
         </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3">Total Efficiency</td>
+                <td>@this.scores.Sum(s => s.NumberOfQuestions)</td>
+                <td>@this.scores.Sum(s => s.NumberOfCorrectAnswers)</td>
+                <td>@((int)Math.Round((double)(100 * this.scores.Sum(s => s.NumberOfCorrectAnswers)) / this.scores.Sum(s => s.NumberOfQuestions)))%</td>
+
+            </tr>
+        </tfoot>
     </table>
     <button class="btn btn-danger" @onclick="this.ResetScores">Reset Scores</button>
 }
@@ -41,30 +52,14 @@ else
     <p>No scores available.</p>
 }
 
+<button class="btn btn-primary" @onclick="NavigateToHome">Back to Home</button>
+
 @code {
     private List<ScoreViewModel> scores = [];
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         this.scores = await this.LocalStorage.GetItemAsync<List<ScoreViewModel>>("score") ?? [];
-
-        // TODO: Remove this temp code after game is written, it's only to be used to test this page
-        if (!this.scores.Any())
-        {
-            this.scores =
-            [
-                new ScoreViewModel
-                {
-                    Category = "General Knowledge",
-                    Difficulty = "Easy",
-                    GameType = "Multiple Choice",
-                    NumberOfQuestions = 10,
-                    NumberOfCorrectAnswers = 8
-                }
-
-            ];
-            await this.LocalStorage.SetItemAsync("score", this.scores);
-        }
 
         this.StateHasChanged();
     }
@@ -73,6 +68,12 @@ else
     {
         this.scores = [];
         await this.LocalStorage.RemoveItemAsync("score");
+        await this.LocalStorage.RemoveItemAsync("token");
         this.StateHasChanged();
+    }
+
+    private void NavigateToHome()
+    {
+        this.NavigationManager.NavigateTo("/");
     }
 }
