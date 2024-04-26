@@ -1,3 +1,4 @@
+using Blazored.LocalStorage;
 using FTB.TriviaLib;
 using FTB.TriviaWeb.Components;
 
@@ -9,6 +10,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<OpenTriviaService>();
+builder.Services.AddBlazoredLocalStorage();
 
 WebApplication app = builder.Build();
 

@@ -1,0 +1,22 @@
+﻿@page "/game"
+
+@inject OpenTriviaService OpenTriviaService
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+
+<PageTitle>Game</PageTitle>
+
+<h3>Game</h3>
+
+@code {
+    private string? token;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        this.token = await this.LocalStorage.GetItemAsync<string>("token");
+        if (string.IsNullOrEmpty(this.token))
+        {
+            this.token = await this.OpenTriviaService.GetToken();
+            await this.LocalStorage.SetItemAsync("token", this.token);
+        }
+    }
+}

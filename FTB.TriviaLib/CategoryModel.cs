@@ -1,15 +1,15 @@
-﻿namespace FTB.TriviaLib
-{
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
-    public partial class CategoryModel
+namespace FTB.TriviaLib
+{
+    public class CategoryModel
     {
         [JsonProperty("trivia_categories")]
         public List<TriviaCategory> TriviaCategories { get; set; } = new List<TriviaCategory>();
     }
 
-    public partial class TriviaCategory
+    public class TriviaCategory
     {
         [JsonProperty("id")]
         public string Id { get; set; } = string.Empty;

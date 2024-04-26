@@ -1,0 +1,78 @@
+﻿@page "/scoreboard"
+@rendermode InteractiveServer
+
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+
+<PageTitle>Score Board</PageTitle>
+
+<h3>Score Board</h3>
+
+@if (this.scores.Any())
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Category</th>
+            <th>Difficulty</th>
+            <th>Game Type</th>
+            <th>Number of Questions</th>
+            <th>Number of Correct Answers</th>
+            <td>Efficiency</td>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (ScoreViewModel score in this.scores)
+        {
+            <tr>
+                <td>@score.Category</td>
+                <td>@score.Difficulty</td>
+                <td>@score.GameType</td>
+                <td>@score.NumberOfQuestions</td>
+                <td>@score.NumberOfCorrectAnswers</td>
+                    <td>@((int)Math.Round((double)(100 * score.NumberOfCorrectAnswers) / score.NumberOfQuestions))%</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    <button class="btn btn-danger" @onclick="this.ResetScores">Reset Scores</button>
+}
+else
+{
+    <p>No scores available.</p>
+}
+
+@code {
+    private List<ScoreViewModel> scores = [];
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        this.scores = await this.LocalStorage.GetItemAsync<List<ScoreViewModel>>("score") ?? [];
+
+        // TODO: Remove this temp code after game is written, it's only to be used to test this page
+        if (!this.scores.Any())
+        {
+            this.scores =
+            [
+                new ScoreViewModel
+                {
+                    Category = "General Knowledge",
+                    Difficulty = "Easy",
+                    GameType = "Multiple Choice",
+                    NumberOfQuestions = 10,
+                    NumberOfCorrectAnswers = 8
+                }
+
+            ];
+            await this.LocalStorage.SetItemAsync("score", this.scores);
+        }
+
+        this.StateHasChanged();
+    }
+
+    private async Task ResetScores()
+    {
+        this.scores = [];
+        await this.LocalStorage.RemoveItemAsync("score");
+        this.StateHasChanged();
+    }
+}

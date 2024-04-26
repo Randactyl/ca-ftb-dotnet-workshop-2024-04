@@ -1,64 +1,39 @@
 ﻿@page "/"
+@rendermode InteractiveServer
 
 @inject OpenTriviaService OpenTriviaService
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
+<h1>Trivia Game</h1>
 
 @if (this.categories.TriviaCategories.Any())
 {
     <ul>
-        @foreach (TriviaCategory category in this.categories.TriviaCategories)
+        @foreach (TriviaCategory category in this.categories.TriviaCategories.OrderBy(s => s.Name))
         {
-            <li>@category.Name <button class="btn btn-primary" @onclick="() => this.GetQuestions(category.Id)">@category.Id</button></li>
+            <li>@category.Name (@category.Id)</li>
         }
     </ul>
 }
-
-@if (this.openTrivia.Results.Any())
-{
-    <h2>Trivia Questions</h2>
-    <ul>
-        @foreach (Result question in this.openTrivia.Results)
-        {
-            <li>
-                @question.Question<br />
-                <ul>
-                    @foreach (string answer in question.IncorrectAnswers)
-                    {
-                        <li>@answer</li>
-                    }
-                    <li>@question.CorrectAnswer</li>
-                </ul>
-                @question.Difficulty<br />
-                @question.Category<br />
-                @question.Type
-            </li>
-        }
-    </ul>
-}
-
 
 @code {
     private CategoryModel categories = new();
-    private OpenTriviaModel openTrivia = new();
+    private string? token;
 
     protected override async Task OnInitializedAsync()
     {
         this.categories = await this.OpenTriviaService.GetCategories();
-        this.openTrivia = await this.OpenTriviaService.GetQuestions(3);
-        // this.openTrivia = await this.OpenTriviaService.GetQuestions(3, "21");
-        // this.openTrivia = await this.OpenTriviaService.GetQuestions(3, "21", Difficulty.Easy);
-        // this.openTrivia = await this.OpenTriviaService.GetQuestions(10, "21", null, TypeEnum.Boolean);
     }
 
-    private async Task GetQuestions(string categoryId)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        Console.WriteLine("HERE");
-        this.openTrivia = await this.OpenTriviaService.GetQuestions(3, categoryId);
-        this.StateHasChanged();
+        this.token = await this.LocalStorage.GetItemAsync<string>("token");
+        if (string.IsNullOrEmpty(this.token))
+        {
+            this.token = await this.OpenTriviaService.GetToken();
+            await this.LocalStorage.SetItemAsync("token", this.token);
+        }
     }
 }

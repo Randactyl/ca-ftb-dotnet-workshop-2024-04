@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,9 +9,6 @@ namespace FTB.TriviaLib
     {
         private readonly HttpClient httpClient;
         private const string BaseUrl = "https://opentdb.com/";
-        private const string encoding = "base64";
-
-        //https://opentdb.com/api.php?amount=10&category=21&difficulty=easy&type=multiple
 
         public OpenTriviaService(HttpClient httpClient)
         {
@@ -20,10 +16,36 @@ namespace FTB.TriviaLib
             this.httpClient.BaseAddress = new Uri(BaseUrl);
         }
 
-        public async Task<OpenTriviaModel> GetQuestions(int amount = 10, string categoryId = "", Difficulty? difficulty = null, TypeEnum? type = null)
+        public async Task<string> GetToken()
         {
+            string? token = await this.httpClient.GetStringAsync("api_token.php?command=request");
+            return string.IsNullOrEmpty(token) ? string.Empty : token;
+        }
+
+        public async Task ResetToken(string token)
+        {
+            if (string.IsNullOrEmpty(token))
+            {
+                throw new ArgumentNullException(nameof(token));
+            }
+
+            _ = await this.httpClient.GetStringAsync($"api_token.php?command=reset&token={token}");
+        }
+
+        public async Task<OpenTriviaModel> GetQuestions(string? token, int amount = 10, string categoryId = "", Difficulty? difficulty = null, TypeEnum? type = null)
+        {
+            if (string.IsNullOrEmpty(token))
+            {
+                throw new ArgumentNullException(nameof(token));
+            }
+
+            if (amount <= 0 || amount > 10)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amount));
+            }
+
             StringBuilder url = new StringBuilder("api.php?");
-            url.Append($"amount={amount}");
+            url.Append($"token={token}&amount={amount}");
             if (!string.IsNullOrEmpty(categoryId))
             {
                 url.Append($"&category={categoryId}");

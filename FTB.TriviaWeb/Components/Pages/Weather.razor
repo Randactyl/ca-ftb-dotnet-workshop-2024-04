@@ -1,9 +1,11 @@
 ﻿@page "/weather"
 @attribute [StreamRendering]
 
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+
 <PageTitle>Weather</PageTitle>
 
-<h1>Weather</h1>
+<h1>Weather @(this.name) </h1>
 
 <p>This component demonstrates showing data.</p>
 
@@ -38,6 +40,7 @@ else
 
 @code {
     private WeatherForecast[]? forecasts;
+    private string? name;
 
     protected override async Task OnInitializedAsync()
     {
@@ -52,6 +55,13 @@ else
             TemperatureC = Random.Shared.Next(-20, 55),
             Summary = summaries[Random.Shared.Next(summaries.Length)]
         }).ToArray();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await this.LocalStorage.SetItemAsync("name", "John Smith");
+        this.name = await this.LocalStorage.GetItemAsync<string>("name");
+        this.StateHasChanged();
     }
 
     private class WeatherForecast
