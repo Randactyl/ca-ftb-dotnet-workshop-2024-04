@@ -39,7 +39,7 @@ namespace FTB.TriviaLib
             _ = await this.httpClient.GetStringAsync($"api_token.php?command=reset&token={token}");
         }
 
-        public async Task<OpenTriviaModel> GetQuestions(string? token, int amount = 10, string categoryId = "", Difficulty? difficulty = null, TypeEnum? type = null)
+        public async Task<OpenTriviaModel> GetQuestions(string? token, int amount = 10, string categoryId = "", string? difficulty = null, string? type = null)
         {
             if (string.IsNullOrEmpty(token))
             {
@@ -52,7 +52,8 @@ namespace FTB.TriviaLib
             }
 
             StringBuilder url = new StringBuilder("api.php?");
-            url.Append($"token={token}&amount={amount}");
+            //url.Append($"token={token}&amount={amount}");
+            url.Append($"amount={amount}");
             if (!string.IsNullOrEmpty(categoryId))
             {
                 url.Append($"&category={categoryId}");
@@ -60,12 +61,12 @@ namespace FTB.TriviaLib
 
             if (difficulty != null)
             {
-                url.Append($"&difficulty={difficulty.ToString().ToLower()}");
+                url.Append($"&difficulty={difficulty.ToLower()}");
             }
 
             if (type != null)
             {
-                url.Append($"&type={type.ToString().ToLower()}");
+                url.Append($"&type={type.ToLower()}");
             }
 
             string? trivia = await this.httpClient.GetStringAsync(url.ToString());
@@ -74,7 +75,7 @@ namespace FTB.TriviaLib
                 return new OpenTriviaModel();
             }
 
-            OpenTriviaModel triviaToReturn = JsonConvert.DeserializeObject<OpenTriviaModel>(trivia) ?? new OpenTriviaModel();
+            OpenTriviaModel triviaToReturn = Newtonsoft.Json.JsonConvert.DeserializeObject<OpenTriviaModel>(trivia) ?? new OpenTriviaModel();
             return triviaToReturn;
         }
 

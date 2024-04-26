@@ -1,14 +1,54 @@
-﻿@page "/game"
+﻿@page "/game/{Category}/{Difficulty}/{GameType}"
 
 @inject OpenTriviaService OpenTriviaService
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject NavigationManager NavigationManager
+
+@rendermode InteractiveServer
 
 <PageTitle>Game</PageTitle>
 
 <h3>Game</h3>
 
+@if (answers.Any() && currentQuestion is not null)
+{
+    <p>@currentQuestion.QuestionText</p>
+
+    @foreach (var answer in answers)
+    {
+        <input type="radio" name="answer" @onchange="@(() => selectedAnswer = answer)" checked="@(selectedAnswer == answer)" disabled="@answered" /> @answer
+        
+        <br />
+    }
+    <br />
+    <p>@answerResult</p>
+    <button class="btn btn-primary" @onclick="CheckAnswer" disabled="@(selectedAnswer is null)">Check Answer</button>
+    <button class="btn btn-primary" @onclick="NextQuestion">Next Question</button>
+}
+else
+{
+    <p>@answerResult</p>
+    <button class="btn btn-primary" @onclick="() => LoadGame()">Go again</button>
+    <button class="btn btn-primary" @onclick="RedirectToHome">Change settings</button>
+}
+
+
 @code {
+    [Parameter]
+    public string? Category { get; set; }
+    [Parameter]
+    public string? Difficulty { get; set; }
+    [Parameter]
+    public string? GameType { get; set; }
+
     private string? token;
+
+    List<Question> questions = new();
+    Question? currentQuestion;
+    List<string> answers = new();
+    string? selectedAnswer;
+    bool answered = false;
+    string? answerResult;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -20,6 +60,65 @@
                 this.token = await this.OpenTriviaService.GetToken();
                 await this.LocalStorage.SetItemAsync("token", this.token);
             }
+
+            LoadGame();
         }
+    }
+
+    private async Task LoadGame()
+    {
+        var response = await this.OpenTriviaService.GetQuestions(this.token, 3, this.Category, this.Difficulty, this.GameType);
+        // TODO: handle ResponseCode 1
+        // if (response.ResponseCode == 4)
+        // {
+        //     await this.OpenTriviaService.ResetToken(token);
+        //     response = await this.OpenTriviaService.GetQuestions(this.token, 10, this.Category, this.Difficulty, this.GameType);
+        // }
+
+        questions = response.Results;
+
+        NextQuestion();
+    }
+
+    private void NextQuestion()
+    {
+        answered = false;
+        answerResult = string.Empty;
+
+        if (questions.Any())
+        {
+            currentQuestion = questions.First();
+            questions.Remove(currentQuestion);
+
+            answers = currentQuestion.IncorrectAnswers.ToList();
+            answers.Add(currentQuestion.CorrectAnswer);
+            answers.Shuffle();
+        }
+        else
+        {
+            currentQuestion = null;
+            answerResult = "Game Over!";
+        }
+
+
+        this.StateHasChanged();
+    }
+    private void CheckAnswer()
+    {
+        answered = true;
+        if (selectedAnswer == currentQuestion.CorrectAnswer)
+        {
+            answerResult = "Correct!";
+        }
+        else
+        {
+            answerResult = "Incorrect!";
+        }
+
+        this.StateHasChanged();
+    }
+    private void RedirectToHome()
+    {
+        this.NavigationManager.NavigateTo("/");
     }
 }
