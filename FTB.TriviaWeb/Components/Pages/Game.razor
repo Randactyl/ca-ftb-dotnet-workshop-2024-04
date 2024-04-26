@@ -30,6 +30,9 @@ else
     <p>@answerResult</p>
     <button class="btn btn-primary" @onclick="() => LoadGame()">Go again</button>
     <button class="btn btn-primary" @onclick="RedirectToHome">Change settings</button>
+    
+    <ScoreBoardComponent />
+    <button class="btn btn-primary" @onclick="GoToScoreboard">Full scoreboard</button>
 }
 
 
@@ -50,10 +53,14 @@ else
     bool answered = false;
     string? answerResult;
 
+    private List<ScoreViewModel> scores = [];
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            this.scores = await this.LocalStorage.GetItemAsync<List<ScoreViewModel>>("score") ?? [];
+
             this.token = await this.LocalStorage.GetItemAsync<string>("token");
             if (string.IsNullOrEmpty(this.token))
             {
@@ -67,17 +74,54 @@ else
 
     private async Task LoadGame()
     {
-        var response = await this.OpenTriviaService.GetQuestions(this.token, 3, this.Category, this.Difficulty, this.GameType);
-        // TODO: handle ResponseCode 1
-        // if (response.ResponseCode == 4)
-        // {
-        //     await this.OpenTriviaService.ResetToken(token);
-        //     response = await this.OpenTriviaService.GetQuestions(this.token, 10, this.Category, this.Difficulty, this.GameType);
-        // }
+        var gameSettings = new GameSettingsModel
+        {
+            Category = this.Category,
+            Difficulty = this.Difficulty,
+            GameType = this.GameType
+        };
+        var inProgressGames = await this.LocalStorage.GetItemAsync<List<InProgressGame>>("inProgressGames");
 
-        questions = response.Results;
+        if (inProgressGames is not null && inProgressGames.Any(x => x.Settings == gameSettings))
+        {
+            this.questions = inProgressGames.First(x => x.Settings == gameSettings).OpenTriviaModel.Results;
 
-        NextQuestion();
+            if (this.questions.Count < 5)
+            {
+                var response = await this.OpenTriviaService.GetQuestions(this.token, 5 - this.questions.Count, this.Category, this.Difficulty, this.GameType);
+
+                this.questions.AddRange(response.Results);
+            }
+        }
+        else
+        {
+            var response = await this.OpenTriviaService.GetQuestions(this.token, 5, this.Category, this.Difficulty, this.GameType);
+
+            if (response.ResponseCode == 1)
+            {
+                var badGameSettings = await this.LocalStorage.GetItemAsync<List<GameSettingsModel>>("badGameSettings") ?? new List<GameSettingsModel>();
+
+                badGameSettings.Add(new GameSettingsModel
+                    {
+                        Category = this.Category,
+                        Difficulty = this.Difficulty,
+                        GameType = this.GameType
+                    });
+
+                await this.LocalStorage.SetItemAsync("badGameSettings", badGameSettings);
+
+                answerResult = "No questions available with these settings. Please try again.";
+
+                this.StateHasChanged();
+            }
+            else
+            {
+
+                questions = response.Results;
+
+                NextQuestion();
+            }
+        }
     }
 
     private void NextQuestion()
@@ -103,22 +147,44 @@ else
 
         this.StateHasChanged();
     }
-    private void CheckAnswer()
+    private async Task CheckAnswer()
     {
         answered = true;
+        var currentScoreModel = scores.FirstOrDefault(x => x.Category == this.Category && x.Difficulty == this.Difficulty && x.GameType == this.GameType);
+        if (currentScoreModel is null)
+        {
+            currentScoreModel = new ScoreViewModel
+            {
+                Category = this.Category,
+                Difficulty = this.Difficulty,
+                GameType = this.GameType,
+                NumberOfQuestions = 0,
+                NumberOfCorrectAnswers = 0
+            };
+            scores.Add(currentScoreModel);
+        }
+
+        currentScoreModel.NumberOfQuestions++;
+
         if (selectedAnswer == currentQuestion.CorrectAnswer)
         {
             answerResult = "Correct!";
+            currentScoreModel.NumberOfCorrectAnswers++;
         }
         else
         {
             answerResult = "Incorrect!";
         }
 
+        await this.LocalStorage.SetItemAsync("score", this.scores);
         this.StateHasChanged();
     }
     private void RedirectToHome()
     {
         this.NavigationManager.NavigateTo("/");
+    }
+    private void GoToScoreboard()
+    {
+        this.NavigationManager.NavigateTo("/scoreboard");
     }
 }
