@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace FTB.TriviaLib
 {
@@ -19,7 +20,13 @@ namespace FTB.TriviaLib
         public async Task<string> GetToken()
         {
             string? token = await this.httpClient.GetStringAsync("api_token.php?command=request");
-            return string.IsNullOrEmpty(token) ? string.Empty : token;
+            if (string.IsNullOrEmpty(token))
+            {
+                return string.Empty;
+            }
+
+            TokenModel tokenModel = JsonConvert.DeserializeObject<TokenModel>(token) ?? new TokenModel();
+            return tokenModel.Token;
         }
 
         public async Task ResetToken(string token)

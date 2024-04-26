@@ -29,11 +29,14 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        this.token = await this.LocalStorage.GetItemAsync<string>("token");
-        if (string.IsNullOrEmpty(this.token))
+        if (firstRender)
         {
-            this.token = await this.OpenTriviaService.GetToken();
-            await this.LocalStorage.SetItemAsync("token", this.token);
+            this.token = await this.LocalStorage.GetItemAsync<string>("token");
+            if (string.IsNullOrEmpty(this.token))
+            {
+                this.token = await this.OpenTriviaService.GetToken();
+                await this.LocalStorage.SetItemAsync("token", this.token);
+            }
         }
     }
 }
