@@ -7,69 +7,17 @@
 
 <PageTitle>Score Board</PageTitle>
 
-<h3>Score Board</h3>
-
-@if (this.scores.Any())
-{
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Category</th>
-            <th>Difficulty</th>
-            <th>Game Type</th>
-            <th>Number of Questions</th>
-            <th>Number of Correct Answers</th>
-            <td>Efficiency</td>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (ScoreViewModel score in this.scores)
-        {
-            <tr>
-                <td>@score.Category</td>
-                <td>@score.Difficulty</td>
-                <td>@score.GameType</td>
-                <td>@score.NumberOfQuestions</td>
-                <td>@score.NumberOfCorrectAnswers</td>
-                    <td>@((int)Math.Round((double)(100 * score.NumberOfCorrectAnswers) / score.NumberOfQuestions))%</td>
-            </tr>
-        }
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="3">Total Efficiency</td>
-                <td>@this.scores.Sum(s => s.NumberOfQuestions)</td>
-                <td>@this.scores.Sum(s => s.NumberOfCorrectAnswers)</td>
-                <td>@((int)Math.Round((double)(100 * this.scores.Sum(s => s.NumberOfCorrectAnswers)) / this.scores.Sum(s => s.NumberOfQuestions)))%</td>
-
-            </tr>
-        </tfoot>
-    </table>
-    <button class="btn btn-danger" @onclick="this.ResetScores">Reset Scores</button>
-}
-else
-{
-    <p>No scores available.</p>
-}
+<ScoreBoardComponent />
 
 <button class="btn btn-primary" @onclick="NavigateToHome">Back to Home</button>
+<button class="btn btn-danger" @onclick="this.ResetScores">Reset Scores</button>
 
 @code {
-    private List<ScoreViewModel> scores = [];
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        this.scores = await this.LocalStorage.GetItemAsync<List<ScoreViewModel>>("score") ?? [];
-
-        this.StateHasChanged();
-    }
-
     private async Task ResetScores()
     {
-        this.scores = [];
         await this.LocalStorage.RemoveItemAsync("score");
         await this.LocalStorage.RemoveItemAsync("token");
-        this.StateHasChanged();
+        this.NavigationManager.NavigateTo("/scoreboard", true);
     }
 
     private void NavigateToHome()

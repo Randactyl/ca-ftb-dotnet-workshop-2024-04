@@ -1,0 +1,80 @@
+﻿@rendermode InteractiveServer
+
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+
+<h3>Score Board</h3>
+
+@if (this.scores.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Difficulty</th>
+                <th>Game Type</th>
+                <th>Number of Questions</th>
+                <th>Number of Correct Answers</th>
+                <td>Efficiency</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (ScoreViewModel score in this.scores)
+            {
+                <tr>
+                    <td>@score.Category</td>
+                    <td>@score.Difficulty</td>
+                    <td>@score.GameType</td>
+                    <td>@score.NumberOfQuestions</td>
+                    <td>@score.NumberOfCorrectAnswers</td>
+                    <td>@((int)Math.Round((double)(100 * score.NumberOfCorrectAnswers) / score.NumberOfQuestions))%</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3">Total Efficiency</td>
+                <td>@this.scores.Sum(s => s.NumberOfQuestions)</td>
+                <td>@this.scores.Sum(s => s.NumberOfCorrectAnswers)</td>
+                <td>@((int)Math.Round((double)(100 * this.scores.Sum(s => s.NumberOfCorrectAnswers)) / this.scores.Sum(s => s.NumberOfQuestions)))%</td>
+
+            </tr>
+        </tfoot>
+    </table>
+}
+else
+{
+    <p>No scores available.</p>
+}
+
+@code {
+    private List<ScoreViewModel> scores = [];
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            this.scores = await this.LocalStorage.GetItemAsync<List<ScoreViewModel>>("score") ?? [];
+            var storedCategories = await this.LocalStorage.GetItemAsync<CategoryModel>("categories");
+
+            foreach (var score in this.scores)
+            {
+                score.Category = storedCategories?.TriviaCategories.FirstOrDefault(c => c.Id == score.Category)?.Name ?? string.Empty;
+                score.Difficulty = score.Difficulty switch
+                {
+                    "easy" => "Easy",
+                    "medium" => "Medium",
+                    "hard" => "Hard",
+                    _ => "Unknown"
+                };
+                score.GameType = score.GameType switch
+                {
+                    "multiple" => "Multiple Choice",
+                    "boolean" => "True/False",
+                    _ => "Unknown"
+                };
+            }
+
+            this.StateHasChanged();
+        }
+    }
+}

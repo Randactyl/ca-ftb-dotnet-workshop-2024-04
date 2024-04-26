@@ -18,7 +18,7 @@
         @foreach (TriviaCategory category in this.categories.TriviaCategories.OrderBy(s => s.Name))
         {
             <option value="@category.Id">@category.Name</option>
-        }"
+        }
     </select>
 </div>
 <div class="form-group">
@@ -38,6 +38,7 @@
 </div>
 
 <button class="btn btn-primary" @onclick="this.StartGame">Start Game</button>
+<button class="btn btn-primary" @onclick="this.GoToScores">View Scores</button>
 
 @* @if (this.categories.TriviaCategories.Any())
 {
@@ -57,11 +58,6 @@
     private string? token;
     private string? errorMessage;
 
-    protected override async Task OnInitializedAsync()
-    {
-        this.categories = await this.OpenTriviaService.GetCategories();
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -72,10 +68,32 @@
                 this.token = await this.OpenTriviaService.GetToken();
                 await this.LocalStorage.SetItemAsync("token", this.token);
             }
+
+            var storedCategories = await this.LocalStorage.GetItemAsync<CategoryModel>("categories");
+            if (storedCategories is null)
+            {
+                this.categories = await this.OpenTriviaService.GetCategories();
+
+                await this.LocalStorage.SetItemAsync("categories", this.categories);
+            }
+            else
+            {
+                this.categories = storedCategories;
+            }
         }
+
+        this.StateHasChanged();
     }
-    private void StartGame()
+    private async Task StartGame()
     {
+        var badGameSettings = await this.LocalStorage.GetItemAsync<List<GameSettingsModel>>("badGameSettings");
+
+        if (badGameSettings != null && badGameSettings.Any(s => s.Category == this.selectedCategory && s.Difficulty == this.selectedDifficulty && s.GameType == this.selectedGameType))
+        {
+            this.errorMessage = "This game doesn't have any questions. Please select a different category, difficulty, and/or game type.";
+            return;
+        }
+
         if (string.IsNullOrEmpty(selectedGameType) || string.IsNullOrEmpty(selectedCategory) || string.IsNullOrEmpty(selectedDifficulty))
         {
             this.errorMessage = "Please select a category, difficulty, and game type.";
@@ -84,5 +102,9 @@
         this.errorMessage = string.Empty;
 
         this.NavigationManager.NavigateTo($"/game/{this.selectedCategory}/{this.selectedDifficulty}/{this.selectedGameType}");
+    }
+    private void GoToScores()
+    {
+        this.NavigationManager.NavigateTo("/scoreboard");
     }
 }
