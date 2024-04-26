@@ -3,12 +3,43 @@
 
 @inject OpenTriviaService OpenTriviaService
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject NavigationManager NavigationManager
 
 <PageTitle>Home</PageTitle>
 
 <h1>Trivia Game</h1>
 
-@if (this.categories.TriviaCategories.Any())
+<p>Make selections and then press start game to play.</p>
+<p>@errorMessage</p>
+
+<div class="form-group">
+    <select @bind="this.selectedCategory">
+        <option value="">Select a category</option>
+        @foreach (TriviaCategory category in this.categories.TriviaCategories.OrderBy(s => s.Name))
+        {
+            <option value="@category.Id">@category.Name</option>
+        }"
+    </select>
+</div>
+<div class="form-group">
+    <select @bind="this.selectedDifficulty">
+        <option value="">Select a difficulty</option>
+        <option value="easy">Easy</option>
+        <option value="medium">Medium</option>
+        <option value="hard">Hard</option>
+    </select>
+</div>
+<div class="form-group">
+    <select @bind="this.selectedGameType">
+        <option value="">Select a game type</option>
+        <option value="multiple">Multiple Choice</option>
+        <option value="boolean">True/False</option>
+    </select>
+</div>
+
+<button class="btn btn-primary" @onclick="this.StartGame">Start Game</button>
+
+@* @if (this.categories.TriviaCategories.Any())
 {
     <ul>
         @foreach (TriviaCategory category in this.categories.TriviaCategories.OrderBy(s => s.Name))
@@ -16,11 +47,15 @@
             <li>@category.Name (@category.Id)</li>
         }
     </ul>
-}
+} *@
 
 @code {
+    private string? selectedCategory;
+    private string? selectedDifficulty;
+    private string? selectedGameType;
     private CategoryModel categories = new();
     private string? token;
+    private string? errorMessage;
 
     protected override async Task OnInitializedAsync()
     {
@@ -38,5 +73,16 @@
                 await this.LocalStorage.SetItemAsync("token", this.token);
             }
         }
+    }
+    private void StartGame()
+    {
+        if (string.IsNullOrEmpty(selectedGameType) || string.IsNullOrEmpty(selectedCategory) || string.IsNullOrEmpty(selectedDifficulty))
+        {
+            this.errorMessage = "Please select a category, difficulty, and game type.";
+            return;
+        }
+        this.errorMessage = string.Empty;
+
+        this.NavigationManager.NavigateTo($"/game/{this.selectedCategory}/{this.selectedDifficulty}/{this.selectedGameType}");
     }
 }
