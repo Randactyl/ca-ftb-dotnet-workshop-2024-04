@@ -74,7 +74,7 @@ namespace FTB.TriviaLib
                 return new OpenTriviaModel();
             }
 
-            OpenTriviaModel triviaToReturn = Newtonsoft.Json.JsonConvert.DeserializeObject<OpenTriviaModel>(trivia) ?? new OpenTriviaModel();
+            OpenTriviaModel triviaToReturn = JsonConvert.DeserializeObject<OpenTriviaModel>(trivia) ?? new OpenTriviaModel();
             return triviaToReturn;
         }
 
